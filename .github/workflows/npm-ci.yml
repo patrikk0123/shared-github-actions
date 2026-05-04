@@ -1,0 +1,92 @@
+name: NPM CI
+
+on:
+  workflow_call:
+    inputs:
+      fetch_all_commits:
+        description: "Whether to fetch all commits. Default: false"
+        required: false
+        type: boolean
+        default: false
+      node_version:
+        description: "The Node.js version to use. Default: 22.x"
+        required: false
+        type: string
+        default: "22.x"
+      build_command:
+        description: "The build command to use. Default: npm ci and npm run build"
+        required: false
+        type: string
+        default: "npm ci && npm run build"
+      test_command:
+        description: "The command to use for tests. Default: null"
+        required: false
+        type: string
+      formatter_command:
+        description: "The command to use for formatting. Default: null"
+        required: false
+        type: string
+      upload_artifacts:
+        description: "Whether to upload artifacts and their metadata. Default: false"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.node_version }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: ${{ inputs.fetch_all_commits == true && '0' || '1' }}
+          persist-credentials: false
+
+      - uses: project-ncl/shared-github-actions/.github/actions/npm-build@8ba48d272f8e53b55e5a266a4c3feeab6e7f0526 # main
+        with:
+          node_version: ${{ inputs.node_version }}
+          build_command: ${{ inputs.build_command }}
+
+      - if: inputs.test_command
+        env:
+          INPUTS_TEST_COMMAND: ${{ inputs.test_command }}
+        run: bash -c "${INPUTS_TEST_COMMAND}"
+
+      - if: inputs.formatter_command
+        env:
+          INPUTS_FORMATTER_COMMAND: ${{ inputs.formatter_command }}
+        run: bash -c "${INPUTS_FORMATTER_COMMAND}"
+
+      - name: Save PR metadata
+        if: inputs.upload_artifacts
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p pr-metadata
+          echo "$PR_NUMBER" > pr-metadata/pr-number
+          echo "$PR_SHA" > pr-metadata/pr-sha
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: inputs.upload_artifacts
+        with:
+          name: pr-build
+          path: |
+            .
+            !.git
+            !pr-metadata
+          retention-days: 1
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: inputs.upload_artifacts
+        with:
+          name: pr-metadata
+          path: pr-metadata
+          retention-days: 1

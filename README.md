@@ -43,6 +43,11 @@ the Java version etc. It is possible to use this within a matrix job.
 ```
 </details>
 
+## NPM CI (`npm-ci.yml`)
+Standard CI workflow for NPM projects.
+
+- **Tasks**: Checkout code, set up Node.js, set up NPM, run build command, optionally run tests, optionally check for code formatting errors, and optionally push build artifact (which is used by Mend workflow).
+
 ## Maven Mend
 Workflow to run Mend analysis, both SCA (Software Composition Analysis) and SAST (Static Application Security Testing), on Maven projects. Because it has to have access to secrets in the organization or repository, it has two modes: `fresh` and `deferred`.
 
