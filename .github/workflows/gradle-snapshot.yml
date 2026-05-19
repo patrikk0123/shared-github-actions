@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: false
+      snapshot_deploy_args:
+        description: "The snapshot args for gradle tool. Default: build publishToCentral -x test -x funcTest"
+        required: false
+        type: string
+        default: "build publishToCentral -x test -x funcTest"
 
     secrets:
       SONATYPE_USERNAME:
@@ -58,7 +63,7 @@ jobs:
         if: ${{ endsWith(steps.project-version.outputs.version, '-SNAPSHOT') }}
         with:
           java_version: ${{ inputs.java_version }}
-          build_args: "build publishToCentral -x test -x funcTest"
+          build_args: ${{ inputs.snapshot_deploy_args }}
         env:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
