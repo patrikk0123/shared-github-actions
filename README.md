@@ -1,7 +1,32 @@
 
 # Table of Contents
 
-<!-- START doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Introduction](#introduction)
+- [Available Workflows](#available-workflows)
+  - [Maven CI (`maven-ci.yml`)](#maven-ci-maven-ciyml)
+  - [Gradle CI (`gradle-ci.yml`)](#gradle-ci-gradle-ciyml)
+  - [NPM CI (`npm-ci.yml`)](#npm-ci-npm-ciyml)
+  - [Mend CI (`mend-ci.yml`)](#mend-ci-mend-ciyml)
+  - [Maven Release (`maven-release.yml`)](#maven-release-maven-releaseyml)
+  - [Maven Snapshot (`maven-snapshot.yml`)](#maven-snapshot-maven-snapshotyml)
+  - [Gradle Snapshot (`gradle-snapshot.yml`)](#gradle-snapshot-gradle-snapshotyml)
+  - [Maven Set Version (`maven-set-version.yml`)](#maven-set-version-maven-set-versionyml)
+  - [Maven Jib (`maven-jib.yml`)](#maven-jib-maven-jibyml)
+  - [Validate GitHub Action (`validate-gh-action.yml`)](#validate-github-action-validate-gh-actionyml)
+  - [Usage Example](#usage-example)
+- [Available Actions](#available-actions)
+  - [Maven Build (`maven-build/action.yml`)](#maven-build-maven-buildactionyml)
+  - [Gradle Build (`gradle-build/action.yml`)](#gradle-build-gradle-buildactionyml)
+  - [NPM Build (`npm-build/action.yml`)](#npm-build-npm-buildactionyml)
+  - [Mend (`mend/action.yml`)](#mend-mendactionyml)
+- [Misc](#misc)
+  - [Dependabot](#dependabot)
+  - [GitHub Releases](#github-releases)
+  - [GitHub Action validations](#github-action-validations)
+
 <!-- END doctoc -->
 
 # Introduction
