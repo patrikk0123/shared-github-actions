@@ -65,13 +65,15 @@ runs:
         export MEND_SCA_PATH_EXCLUSIONS="$SCA_EXCLUDES"
 
         mend dep -u $REACHABILITY_SCAN --fail-policy --export-results sca-results.txt --non-interactive --scope "$MEND_SCOPE" "${TAGS_ARG[@]}" || SCAN_EXIT=$?
-
         SCAN_EXIT=${SCAN_EXIT:-0}
+
         mkdir -p ~/.mend/logs
         [ -f sca-results.txt ] && cp sca-results.txt ~/.mend/logs
+
         exit "$SCAN_EXIT"
 
     - name: Run Mend SAST scan
+      id: sast_scan
       if: ${{ !cancelled() && inputs.SAST == 'true' }}
       shell: bash
       env:
@@ -85,10 +87,18 @@ runs:
         export MEND_SAST_PATH_EXCLUSIONS="$SAST_EXCLUDES"
 
         mend code -r --formats sarif --filename sast-results --non-interactive --scope "$MEND_SCOPE" "${TAGS_ARG[@]}" || SCAN_EXIT=$?
-
         SCAN_EXIT=${SCAN_EXIT:-0}
+
         mkdir -p ~/.mend/logs
-        [ -f sast-results.sarif ] && cp sast-results.sarif ~/.mend/logs
+
+        if [ -f sast-results.sarif ]; then
+          cp sast-results.sarif ~/.mend/logs/
+          echo "has_results=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has_results=false" >> "$GITHUB_OUTPUT"
+        fi
+
+
         exit "$SCAN_EXIT"
 
     - name: Publish Mend folder
@@ -100,9 +110,9 @@ runs:
         retention-days: 5
 
     - name: Upload Mend SAST results to GitHub Security
-      if: ${{ !cancelled() && inputs.SAST == 'true' && hashFiles('/home/runner/.mend/logs/sast-results.sarif') != '' }}
-      uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225
+      if: ${{ !cancelled() && inputs.SAST == 'true' && steps.sast_scan.outputs.has_results == 'true' }}
+      uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
       with:
-        sarif_file: /home/runner/.mend/logs/sast-results.sarif # v4.35.2
+        sarif_file: /home/runner/.mend/logs/sast-results.sarif
         ref: ${{ inputs.source_ref }}
         sha: ${{ inputs.source_sha }}
