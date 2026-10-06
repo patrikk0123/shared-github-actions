@@ -232,6 +232,8 @@ jobs:
 ## Maven Release (`maven-release.yml`)
 Workflow for performing a release to Maven Central (Sonatype). This can be manually run by going to the GitHub Actions tab and selecting the workflow.
 
+Releases <= v0.0.24 are compatible with `jboss-parent` <= v53. v0.0.25 upward require `jboss-parent` v54+.
+
 - **Tasks**: Configures Git, sets up Java and GPG, performs `release:prepare`
   and `release:perform`, and pushes changes/tags back to the repository. The
   next version is set by bumping the patch version by 1 and putting the
@@ -249,6 +251,8 @@ Note that the `jboss-parent` overrides the release-plugin `tagNameFormat` to use
 ## Maven Snapshot (`maven-snapshot.yml`)
 Workflow for deploying snapshot versions to Maven Central. Gated to the upstream repo so forks don't attempt to publish
 
+Releases <= v0.0.24 are compatible with `jboss-parent` <= v53. v0.0.25 upward require `jboss-parent` v54+.
+
 - **Tasks**: Deploy our SNAPSHOT version of our project to Maven Central
   Optionally builds and pushes a Quarkus Jib image to Quay.io.
 - **Inputs**: The following inputs are available to be overridden
@@ -257,7 +261,7 @@ Workflow for deploying snapshot versions to Maven Central. Gated to the upstream
   * snapshot_deploy_command (default `mvn -B -V deploy`)
   * fetch_all_commits (default: `false`)
   * quarkus_jib_image ( default: `false`)
-  * jboss_parent_override: This is used to override variables from the jboss-parent (default `-Dcentral.serverId=central-publisher -Dcentral.sonatype.url=https://central.sonatype.com/repository/maven-snapshots -Pcentral-release -Dgpg.skip`)
+  * jboss_parent_override: This is used to override variables from the jboss-parent (default `-Dcentral.serverId=central-publisher -Pcentral-release -Dgpg.skip`)
 - **Permissions**: `none`
 
 ## Gradle Snapshot (`gradle-snapshot.yml`)
